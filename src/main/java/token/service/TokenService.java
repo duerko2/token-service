@@ -61,10 +61,12 @@ public class TokenService {
 
 	public void handlePaymentRequestSent(Event ev) {
 		var payment = ev.getArgument(0, Payment.class);
-
+		new Thread(()-> concurrentHandlePaymentRequest(payment)).start();
+	}
+	public void concurrentHandlePaymentRequest(Payment payment){
 		var accountId = tokenRepo.getAccountId(payment.getToken());
 
-		payment.setAccountId(accountId);
+		payment.setCustomerId(accountId);
 
 		tokenRepo.deleteToken(payment.getToken());
 		tokenRepo.addToken(generateRandomToken(),accountId);
