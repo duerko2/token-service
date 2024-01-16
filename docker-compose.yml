@@ -3,4 +3,10 @@ services:
   token-service:
     image: token-service
     build: .
+    networks:
+      - system-test_dtupay-network
+
+networks:
+  system-test_dtupay-network:
+    external: true
  
