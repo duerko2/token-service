@@ -26,10 +26,8 @@ public class TokenServiceSteps {
 	String prevRFID;
 
 
-
-	@When("a {string} event for an account is received")
-	public void aEventForAnAccountIsReceived(String eventName) {
-		// mocking the event
+	@When("a {string} event for an account is received that asks for {int} tokens")
+	public void aEventForAnAccountIsReceivedThatAsksForTokens(String eventName, Integer tokensRequested) {
 		account = new Account();
 		// Bond..
 		account.setName("James");
@@ -39,7 +37,7 @@ public class TokenServiceSteps {
 
 		//System.out.println(account);
 
-		account = s.handleInitialTokenEvent(new Event(eventName, new Object[]{account}));
+		account = s.handleInitialTokenEvent(new Event(eventName, new Object[]{account, tokensRequested}));
 	}
 
 	@Then("the {string} event is sent")
@@ -110,7 +108,18 @@ public class TokenServiceSteps {
 		verify(queue).publish(event);
 
 	}
-}
 
+
+	@When("a {string} event for an account is received that requests {int} tokens")
+	public void aEventForAnAccountIsReceivedThatRequestsTokens(String eventName, Integer requestedTokens) {
+
+
+		account = s.newTokenRequestRequested(new Event(eventName, new Object[]{account, requestedTokens}));
+	}
+
+
+
+
+}
 
 

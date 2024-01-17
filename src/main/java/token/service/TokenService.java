@@ -16,13 +16,39 @@ public class TokenService {
 		this.queue = q;
 		this.queue.addHandler("InitialTokensRequested", this::handleInitialTokenEvent);
 		this.queue.addHandler("PaymentRequestSent", this::handlePaymentRequestSent);
+		this.queue.addHandler("NewTokenRequestRequested", this::newTokenRequestRequested);
 	}
+
+	public Account newTokenRequestRequested(Event ev) {
+		var account =  ev.getArgument(0,Account.class);
+		int tokensRequested = ev.getArgument(1,Integer.class);
+		if (account.getTokens().size()<=1&& tokensRequested<=5 && tokensRequested>=1) {
+			List<Token> tokenList = new ArrayList<>();
+			if (!account.getTokens().isEmpty()) {
+				tokenList.add(account.getTokens().get(0));
+			}
+			for (int i = 0; i < tokensRequested; i++) {
+				tokenList.add(generateRandomToken());
+			}
+			addTokensToAccount(account, account.tokens);
+			addTokensToAccount(account, tokenList);
+			Event event = new Event("NewTokenRequestedAssigned", new Object[]{account});
+			queue.publish(event);
+			return account;
+
+		}
+		return account;
+	}
+
+
+
 
 	public Account handleInitialTokenEvent(Event ev) {
 		var account = ev.getArgument(0, Account.class);
-		// 6 tokens
+		Integer tokensRequested = ev.getArgument(1,Integer.class);
+        // 6 tokens
 		List<Token> tokenList = new ArrayList<>();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < tokensRequested; i++) {
 			tokenList.add(generateRandomToken());
 		}
 		addTokensToAccount(account, tokenList);
