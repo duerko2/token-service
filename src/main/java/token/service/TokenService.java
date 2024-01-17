@@ -20,13 +20,15 @@ public class TokenService {
 	}
 
 	public Account newTokenRequestRequested(Event ev) {
-		var account =  ev.getArgument(0,Account.class);
-		int tokensRequested = ev.getArgument(1,Integer.class);
-		if (account.getTokens().size()<=1&& tokensRequested<=5 && tokensRequested>=1) {
-			List<Token> tokenList = new ArrayList<>();
-			if (!account.getTokens().isEmpty()) {
-				tokenList.add(account.getTokens().get(0));
-			}
+		var account = ev.getArgument(0, Account.class);
+		int tokensRequested = ev.getArgument(1, Integer.class);
+		List<Token> tokenList = new ArrayList<>();
+
+		tokenList = tokenRepo.getTokenList(account.getAccountId());
+
+		if (tokenList.size() <= 1 && tokensRequested <= 5 && tokensRequested >= 1) {
+
+
 			for (int i = 0; i < tokensRequested; i++) {
 				tokenList.add(generateRandomToken());
 			}
@@ -35,7 +37,6 @@ public class TokenService {
 			Event event = new Event("NewTokenRequestedAssigned", new Object[]{account});
 			queue.publish(event);
 			return account;
-
 		}
 		return account;
 	}

@@ -118,8 +118,21 @@ public class TokenServiceSteps {
 	}
 
 
+/*	@Then("the {string} event is sent and the account has {int} tokens")
+	public void theEventIsSentAndTheAccountHasTokens(String eventName, int tokens) {
 
+		expected = new Account();
+		expected.setName("James");
+		expected.setLastname("Bond");
+		expected.setCpr("007");
+		expected.setAccountId("123");
 
+		var event = new Event(eventName, new Object[]{expected});
+		verify(queue).publish(event);
+		assertEquals(tokens,);
+	}
+
+ */
 }
 
 
