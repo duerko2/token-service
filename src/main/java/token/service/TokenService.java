@@ -6,6 +6,7 @@ import messaging.MessageQueue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class TokenService {
 
@@ -13,28 +14,26 @@ public class TokenService {
 	MessageQueue queue;
 
 	public TokenService(MessageQueue q) {
+		System.out.println("Handlers added");
 		this.queue = q;
 		this.queue.addHandler("InitialTokensRequested", this::handleInitialTokenEvent);
 		this.queue.addHandler("PaymentRequestSent", this::handlePaymentRequestSent);
 		this.queue.addHandler("NewTokenRequestRequested", this::newTokenRequestRequested);
 	}
 
-	public Account newTokenRequestRequested(Event ev) {
-		var account = ev.getArgument(0, Account.class);
+	public String newTokenRequestRequested(Event ev) {
+		System.out.printf("New Token event");
+		var account = ev.getArgument(0, String.class);
 		int tokensRequested = ev.getArgument(1, Integer.class);
 		List<Token> tokenList = new ArrayList<>();
 
-		tokenList = tokenRepo.getTokenList(account.getAccountId());
-
+		tokenList = tokenRepo.getTokenList(account);
 		if (tokenList.size() <= 1 && tokensRequested <= 5 && tokensRequested >= 1) {
-
-
 			for (int i = 0; i < tokensRequested; i++) {
 				tokenList.add(generateRandomToken());
 			}
-			addTokensToAccount(account, account.tokens);
 			addTokensToAccount(account, tokenList);
-			Event event = new Event("NewTokenRequestedAssigned", new Object[]{account});
+			Event event = new Event("NewTokenRequestedAssigned", new Object[]{account,tokenList});
 			queue.publish(event);
 			return account;
 		}
@@ -44,8 +43,8 @@ public class TokenService {
 
 
 
-	public Account handleInitialTokenEvent(Event ev) {
-		var account = ev.getArgument(0, Account.class);
+	public String handleInitialTokenEvent(Event ev) {
+		var account = ev.getArgument(0, String.class);
 		Integer tokensRequested = ev.getArgument(1,Integer.class);
         // 6 tokens
 		List<Token> tokenList = new ArrayList<>();
@@ -53,44 +52,30 @@ public class TokenService {
 			tokenList.add(generateRandomToken());
 		}
 		addTokensToAccount(account, tokenList);
-
-		Event event = new Event("InitialTokensAssigned", new Object[]{account});
+		tokenList = tokenRepo.getTokenList(account);
+		Event event = new Event("InitialTokensAssigned", new Object[]{account,tokenList});
 		queue.publish(event);
 		return account;
 	}
 
-	private void addTokensToAccount(Account account, List<Token> tokenList) {
-		account.setTokens(tokenList);
+	private void addTokensToAccount(String accountId, List<Token> tokenList) {
 		for (Token token : tokenList) {
-			tokenRepo.addToken(token, account.getAccountId());
+			tokenRepo.addToken(token, accountId);
 		}
 	}
 
 	private Token generateRandomToken() {
-		Random r = new Random();
-
-		// Copilot generated this code
-		String randomString = r.ints(48, 122)
-				.filter(i -> (i < 57 || i > 65) && (i < 90 || i > 97))
-				.mapToObj(i -> (char) i)
-				.limit(10)
-				.collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
-				.toString();
-		/*
-		//Rasmus generated this code
-		String ran = UUID.randomUUID().toString();
-		//Andreas generated this code
-		String dinMor = "ooga booga";
-		 */
-
+		String randomString = UUID.randomUUID().toString();
 		return new Token(randomString);
 	}
 
 	public void handlePaymentRequestSent(Event ev) {
 		var payment = ev.getArgument(0, Payment.class);
+		System.out.printf("token before async" + payment.getToken());
 		new Thread(()-> concurrentHandlePaymentRequest(payment)).start();
 	}
 	public void concurrentHandlePaymentRequest(Payment payment){
+		System.out.println("PaymentRequest" + payment.getToken());
 		var accountId = tokenRepo.getAccountId(payment.getToken());
 
 		payment.setCustomerId(accountId);

@@ -8,6 +8,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import messaging.Event;
 import messaging.MessageQueue;
+import org.mockito.Mockito;
 import token.service.Account;
 import token.service.Payment;
 import token.service.Token;
@@ -37,7 +38,7 @@ public class TokenServiceSteps {
 
 		//System.out.println(account);
 
-		account = s.handleInitialTokenEvent(new Event(eventName, new Object[]{account, tokensRequested}));
+		account.setAccountId( s.handleInitialTokenEvent(new Event(eventName, new Object[]{account.getAccountId(), tokensRequested})));
 	}
 
 	@Then("the {string} event is sent")
@@ -47,14 +48,15 @@ public class TokenServiceSteps {
 		expected.setLastname("Bond");
 		expected.setCpr("007");
 		expected.setAccountId("123");
+		var tokens = s.getTokenRepo().getTokenList(account.getAccountId());
+		var event = new Event(eventName, new Object[]{account.getAccountId(),tokens});
 
-		var event = new Event(eventName, new Object[]{expected});
 		verify(queue).publish(event);
 	}
 
 	@Then("the account has {int} tokens")
 	public void theAccountGetsTokens(Integer int1) {
-		assertEquals(int1, account.getTokens().size());
+		assertEquals(int1, s.getTokenRepo().getTokenList(account.getAccountId()).size());
 	}
 
 
@@ -114,7 +116,7 @@ public class TokenServiceSteps {
 	public void aEventForAnAccountIsReceivedThatRequestsTokens(String eventName, Integer requestedTokens) {
 
 
-		account = s.newTokenRequestRequested(new Event(eventName, new Object[]{account, requestedTokens}));
+		account.setAccountId( s.newTokenRequestRequested(new Event(eventName, new Object[]{account.getAccountId(), requestedTokens})));
 	}
 
 
