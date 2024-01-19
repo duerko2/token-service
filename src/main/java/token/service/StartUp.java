@@ -1,7 +1,9 @@
 package token.service;
 
 import messaging.implementations.RabbitMqQueue;
-
+/**
+ * Hubert's code
+ */
 public class StartUp {
 	public static void main(String[] args) throws Exception {
 		new StartUp().startUp();

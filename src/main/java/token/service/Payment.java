@@ -1,5 +1,8 @@
 package token.service;
-
+/**
+ * @Author: Rasmus Bo Thomsen
+ * Mob programming, all members
+ */
 public class Payment {
 
 

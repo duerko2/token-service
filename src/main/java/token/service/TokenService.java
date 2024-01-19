@@ -6,7 +6,9 @@ import messaging.MessageQueue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+/**
+ * @Author: Nikolaj Beier
+ */
 public class TokenService {
 
 	TokenRepo tokenRepo = new TokenRepo();
