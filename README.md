@@ -28,8 +28,8 @@ DTUPay
 ├── bank-service
 ├── payment-service
 ├── reporting-service
-├── system-test
-└── token-service 
+├── token-service
+└── system-test 
 ```
 
 Run the following commands to build, test and run all the services and the system tests (assuming you have followed the directory structure and are currently in the DTUPay folder)
@@ -52,7 +52,7 @@ cd system-test
 
 
 ### Troubleshooting
-If you cannot run the build.sh script, ensure that the script is runnable by running the following command
+If you cannot run the build.sh script, ensure that the script is runnable by running the following command (assuming that you are in the token-service directory)
 ```Bash
 chmod +x build.sh
 ```
