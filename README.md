@@ -1,6 +1,5 @@
-# Account Service
-
-The Account Service is a microservice in the DTUPay system responsible for managing user accounts.
+# Token Service
+The Token Service is a microservice in the DTUPay system responsible for creating, deleting, assigning and verifying tokens.
 
 ## Requirements
 To run the service locally, ensure that you have the proper dependencies installed
