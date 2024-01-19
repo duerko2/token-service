@@ -78,12 +78,7 @@ public class TokenService {
 				.limit(10)
 				.collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
 				.toString();
-		/*
-		//Rasmus generated this code
-		String ran = UUID.randomUUID().toString();
-		//Andreas generated this code
-		String dinMor = "ooga booga";
-		 */
+
 
 		return new Token(randomString);
 	}
