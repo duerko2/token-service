@@ -18,7 +18,6 @@ Feature: Token assignment to account when created
     When a "NewTokenRequestRequested" event for an account is received that requests 3 tokens
     Then the "NewTokenRequestedAssigned" event is sent
     And the account has 4 tokens
-    #Then the "NewTokenRequestedAssigned" event is sent and the account has 4 tokens
 
   Scenario:
     When a "InitialTokensRequested" event for an account is received that asks for 6 tokens
