@@ -1,5 +1,6 @@
-package token.service;
+package token.service.service;
 
+import messaging.implementations.MessageQueueAsync;
 import messaging.implementations.RabbitMqQueue;
 
 public class StartUp {
@@ -9,7 +10,7 @@ public class StartUp {
 
 	private void startUp() throws Exception {
 		System.out.println("startup");
-		var mq = new RabbitMqQueue("rabbitMq");
+		var mq = new RabbitMqQueue("rabbitMq","event");
 		new TokenService(mq);
 	}
 }

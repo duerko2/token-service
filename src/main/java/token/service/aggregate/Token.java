@@ -1,4 +1,4 @@
-package token.service;
+package token.service.aggregate;
 
 public class Token {
     String rfid;

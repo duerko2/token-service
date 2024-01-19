@@ -1,4 +1,4 @@
-package token.service;
+package token.service.aggregate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class Account implements Serializable {
 	private AccountType type;
 	private String cpr;
 	private String bankId;
-	private String accountId;
+	private AccountId accountId;
 	List<Token> tokens = new ArrayList<>();
 
 	public AccountType getType() {
@@ -55,11 +55,11 @@ public class Account implements Serializable {
 		this.bankId = bankId;
 	}
 
-	public String getAccountId() {
+	public AccountId getAccountId() {
 		return accountId;
 	}
 
-	public void setAccountId(String accountId) {
+	public void setAccountId(AccountId accountId) {
 		this.accountId = accountId;
 	}
 

@@ -1,4 +1,4 @@
-FROM adoptopenjdk:11-jre-hotspot
+FROM openjdk:21-jdk
 COPY target/lib /usr/src/lib
 COPY target/token-service-1.0.0.jar /usr/src/
 WORKDIR /usr/src/

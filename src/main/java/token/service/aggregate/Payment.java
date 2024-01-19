@@ -1,13 +1,13 @@
-package token.service;
+package token.service.aggregate;
 
 public class Payment {
 
 
     int amount;
     Token token;
-    String merchantId;
-    String customerId;
-    String paymentId;
+    AccountId merchantId;
+    AccountId customerId;
+    PaymentId paymentId;
 
     public Payment() {
     }
@@ -17,7 +17,7 @@ public class Payment {
     }
 
 
-    public String getMerchantId() {
+    public AccountId getMerchantId() {
         return merchantId;
     }
 
@@ -26,7 +26,7 @@ public class Payment {
     }
 
 
-    public void setMerchantId(String merchantId) {
+    public void setMerchantId(AccountId merchantId) {
         this.merchantId = merchantId;
     }
 
@@ -38,19 +38,19 @@ public class Payment {
         this.token = token;
     }
 
-    public String getCustomerId() {
+    public AccountId getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(String customerId) {
+    public void setCustomerId(AccountId customerId) {
         this.customerId = customerId;
     }
 
-    public String getPaymentId() {
+    public PaymentId getPaymentId() {
         return paymentId;
     }
 
-    public void setPaymentId(String paymentId) {
+    public void setPaymentId(PaymentId paymentId) {
         this.paymentId = paymentId;
     }
 

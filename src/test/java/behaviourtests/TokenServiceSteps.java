@@ -6,24 +6,26 @@ import static org.mockito.Mockito.*;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import messaging.Event;
-import messaging.MessageQueue;
-import token.service.Account;
-import token.service.Payment;
-import token.service.Token;
-import token.service.TokenService;
 
+import messaging.MessageQueue;
+import token.service.aggregate.*;
+import token.service.events.BankAccountRequest;
+import token.service.events.PaymentCreated;
+import token.service.events.TokensAssigned;
+import token.service.events.TokensRequested;
+import token.service.service.TokenService;
+
+import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class TokenServiceSteps {
 	MessageQueue queue = mock(MessageQueue.class);
 	TokenService s = new TokenService(queue);
 	Account account;
-	Account expected;
-	private CompletableFuture<Account> TokenizedAccount;
 	Payment payment;
 	Token token;
-	String prevRFID;
+	private AccountId customerID;
 
 
 	@When("a {string} event for an account is received that asks for {int} tokens")
@@ -33,32 +35,33 @@ public class TokenServiceSteps {
 		account.setName("James");
 		account.setLastname("Bond");
 		account.setCpr("007");
-		account.setAccountId("123");
+		account.setAccountId(new AccountId(UUID.randomUUID()));
 
 		//System.out.println(account);
 
-		account = s.handleInitialTokenEvent(new Event(eventName, new Object[]{account, tokensRequested}));
+		s.handleTokensRequested(new TokensRequested(account.getAccountId(), tokensRequested));
+	}
+
+	@When("a {string} event for an account is received again that asks for {int} tokens")
+	public void aEventForAnAccountIsReceivedAgainThatAsksForTokens(String eventName, Integer tokensRequested) {
+		s.handleTokensRequested(new TokensRequested(account.getAccountId(), tokensRequested));
 	}
 
 	@Then("the {string} event is sent")
 	public void theEventIsSent(String eventName) {
-		expected = new Account();
-		expected.setName("James");
-		expected.setLastname("Bond");
-		expected.setCpr("007");
-		expected.setAccountId("123");
 
-		var event = new Event(eventName, new Object[]{expected});
-		verify(queue).publish(event);
+
+		var expectedTokens = new HashSet<Token>();
+		expectedTokens.add(new Token("xxx69xxx"));
+
+		var message = new TokensAssigned(account.getAccountId(), expectedTokens);
+		verify(queue).publish(message);
 	}
 
 	@Then("the account has {int} tokens")
 	public void theAccountGetsTokens(Integer int1) {
-		assertEquals(int1, account.getTokens().size());
+		assertEquals(int1, s.getTokenRepo().getTokenList(account.getAccountId().getUuid().toString()).size());
 	}
-
-
-
 
 	@Then("the {string}")
 	public void the(String string) {
@@ -69,19 +72,23 @@ public class TokenServiceSteps {
 	@Given("a valid payment with a valid token that exist")
 	public void aValidPaymentWithAValidTokenThatExist() {
 		token = new Token("xxx69xxx");
-	s.getTokenRepo().addToken( token, "customer");
+		customerID = new AccountId(UUID.randomUUID());
+		s.getTokenRepo().addToken( token, customerID);
+
 		payment = new Payment();
 		payment.setAmount(100);
-		payment.setMerchantId("merchant");
+		payment.setMerchantId(new AccountId(UUID.randomUUID()));
 		payment.setToken(token);
-		payment.setPaymentId("123");
+		payment.setPaymentId(new PaymentId(UUID.randomUUID()));
 
 	}
 	@When("a {string} for a payment")
 	public void aForAPayment(String eventName) throws InterruptedException {
 
-		Object[] arguments = new Object[]{payment};
-		s.handlePaymentRequestSent(new Event(eventName, arguments));
+		PaymentCreated m = new PaymentCreated(payment.getPaymentId(),payment.getAmount(),payment.getToken(),payment.getMerchantId());
+
+
+		s.handlePaymentRequestSent(m);
 
 		// simulate downstream service
 		Thread.sleep(500);
@@ -96,43 +103,23 @@ public class TokenServiceSteps {
 
 	@Then("the {string} event is sent with a payment")
 	public void theEventIsSentWithAPayment(String eventName) {
-		Payment expectedPayment = new Payment();
-		expectedPayment.setMerchantId(payment.getMerchantId());
-		expectedPayment.setToken(payment.getToken());
-		expectedPayment.setAmount(payment.getAmount());
-		expectedPayment.setPaymentId(payment.getPaymentId());
 
-		expectedPayment.setCustomerId("customer");
 
-		var event = new Event(eventName, new Object[]{expectedPayment});
+		var event = new BankAccountRequest(payment.getPaymentId(),customerID, payment.getMerchantId(),payment.getAmount());
 		verify(queue).publish(event);
 
 	}
 
 
-	@When("a {string} event for an account is received that requests {int} tokens")
-	public void aEventForAnAccountIsReceivedThatRequestsTokens(String eventName, Integer requestedTokens) {
+	@Then("the {string} event is again")
+	public void theEventIsAgain(String arg0) {
+		var expectedTokens = new HashSet<Token>();
+		expectedTokens.add(new Token("xxx69xxx"));
 
+		var message = new TokensAssigned(account.getAccountId(), expectedTokens);
+		verify(queue,times(2)).publish(message);
 
-		account = s.newTokenRequestRequested(new Event(eventName, new Object[]{account, requestedTokens}));
 	}
-
-
-/*	@Then("the {string} event is sent and the account has {int} tokens")
-	public void theEventIsSentAndTheAccountHasTokens(String eventName, int tokens) {
-
-		expected = new Account();
-		expected.setName("James");
-		expected.setLastname("Bond");
-		expected.setCpr("007");
-		expected.setAccountId("123");
-
-		var event = new Event(eventName, new Object[]{expected});
-		verify(queue).publish(event);
-		assertEquals(tokens,);
-	}
-
- */
 }
 
 

@@ -98,8 +98,20 @@
 
 		<dependency>
 			<groupId>com.github.NikolajBeier</groupId>
-			<artifactId>messaging-utilities</artifactId>
-			<version>2ff374cc49</version>
+			<artifactId>message-utilities</artifactId>
+			<version>1803d626e0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jmolecules</groupId>
+			<artifactId>jmolecules-ddd</artifactId>
+			<version>1.4.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -127,7 +139,7 @@
 						<index>true</index>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>token.service.StartUp</mainClass>
+							<mainClass>token.service.service.StartUp</mainClass>
 							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
 					</archive>
@@ -152,7 +164,15 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 	<profiles>
 		<profile>
