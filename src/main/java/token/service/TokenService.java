@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-
+/**
+ * @Author: Nikolaj Beier
+ */
 public class TokenService {
 
 	TokenRepo tokenRepo = new TokenRepo();

@@ -15,7 +15,10 @@ import token.service.Token;
 import token.service.TokenService;
 
 import java.util.concurrent.CompletableFuture;
-
+/**
+ * @Author: Alex Batten
+ * Mob programming, all members
+ */
 public class TokenServiceSteps {
 	MessageQueue queue = mock(MessageQueue.class);
 	TokenService s = new TokenService(queue);
